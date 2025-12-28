@@ -16,20 +16,30 @@ namespace desktop_app_hybrid.Services
                 ?? throw new InvalidOperationException("Connection string 'Default' not found");
         }
 
-        public async Task<bool> LoginAsync(string username, string password)
+        public async Task<bool> LoginAsync(string username, string password,int ist,int it )
         {
             try
             {
                 await using var conn = new SqlConnection(_cs);
                 await conn.OpenAsync();
 
-                const string sql = """ select dbo.CheckLogin(@u,@p)""";
+                const string sql = """ select dbo.CheckLogin(@login,@password,@ist,@it)""";
 
                 await using var cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@u", username);
-                cmd.Parameters.AddWithValue("@p", password);
+                cmd.Parameters.AddWithValue("@login", username);
+                cmd.Parameters.AddWithValue("@password", password);
+                cmd.Parameters.AddWithValue("@ist", ist);
+                cmd.Parameters.AddWithValue("@it", it);
 
-                return Convert.ToBoolean(await cmd.ExecuteScalarAsync()) ;
+
+
+                bool r= Convert.ToBoolean(await cmd.ExecuteScalarAsync()) ;
+                Debug.WriteLine(username);
+                Debug.WriteLine(password);
+                Debug.WriteLine(ist);
+                Debug.WriteLine(it);
+                Debug.WriteLine(r);
+                return r;
             }
             catch (Exception ex)
             {
